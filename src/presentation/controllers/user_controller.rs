@@ -1,12 +1,13 @@
 use actix_web::{HttpResponse, Responder, web};
-use chrono::Utc;
 use sea_orm::ActiveValue::Set;
+use serde::{Deserialize, Serialize};
 
 use crate::domain::entities::user::ActiveModel as UserActiveModel;
 use crate::domain::services::user_service::UserService;
+use crate::enums::user_enum::UserRoleEnum;
 
 
-#[derive(serde::Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct CreateUserRequest {
     pub username: String,
     pub email: String,
@@ -23,16 +24,13 @@ pub async fn get_all_users(service: web::Data<UserService>, user_data: web::Json
 
 
 pub async fn create_user(service: web::Data<UserService>, user_data: web::Json<CreateUserRequest>) -> impl Responder {
+    let default_role = UserRoleEnum::USER;
     let user = UserActiveModel {
-        id: Set(1),
         username: Set(user_data.username.clone()),
         email: Set(user_data.email.clone()),
         password: Set(user_data.password.clone()),  // Hash the password before saving in a real application
-        logo: Set(None),
-        lang: Set(None),
-        role_id: Set(3), // Default role is USER
-        created: Set(Utc::now().into()),
-        updated: Set(Utc::now().into()),
+        role_id: Set(default_role.value()),
+        ..Default::default()
     };
 
     match service.create_user(user).await {

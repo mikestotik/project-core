@@ -20,6 +20,7 @@ mod domain;
 mod infrastructure;
 mod presentation;
 mod application;
+mod enums;
 
 
 #[actix_web::main]

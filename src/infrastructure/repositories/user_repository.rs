@@ -19,16 +19,16 @@ impl UserRepository {
 
     pub async fn create(&self, user: user::ActiveModel) -> Result<user::Model, sea_orm::DbErr> {
         let result = user::Entity::insert(user.clone()).exec(&self.db).await?;
+        // user::Entity::find_by_id(result.last_insert_id).one(&self.db).await?;
         Ok(user::Model {
             id: result.last_insert_id,
             username: user.username.unwrap(),
             email: user.email.unwrap(),
             password: user.password.unwrap(),
-            logo: user.logo.unwrap(),
-            lang: user.lang.unwrap(),
             role_id: user.role_id.unwrap(),
-            created: user.created.unwrap(),
-            updated: user.updated.unwrap(),
+            // created: user.created.unwrap(),
+            // updated: user.updated.unwrap(),
+            ..Default::default()
         })
     }
 
