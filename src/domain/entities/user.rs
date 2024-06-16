@@ -1,7 +1,8 @@
 use sea_orm::entity::prelude::*;
+use serde::Serialize;
 
 
-#[derive(Clone, Debug, PartialEq, DeriveEntityModel)]
+#[derive(Clone, Debug, PartialEq, DeriveEntityModel, Serialize)]
 #[sea_orm(table_name = "users")]
 pub struct Model {
     #[sea_orm(primary_key)]
@@ -13,9 +14,9 @@ pub struct Model {
     pub lang: Option<String>,
     pub role_id: i32,
     #[sea_orm(on_insert = "current_timestamp")]
-    pub created: DateTime,
+    pub created: DateTimeWithTimeZone,
     #[sea_orm(on_update = "current_timestamp")]
-    pub updated: DateTime,
+    pub updated: DateTimeWithTimeZone,
 }
 
 
