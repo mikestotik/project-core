@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16.3
+    container_name: db-postgres
+    restart: always
+    environment:
+      POSTGRES_DB: myapp
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/postgresql:/var/lib/postgresql/
+
+  pgadmin:
+    container_name: db-admin
+    image: dpage/pgadmin4:latest
+    restart: always
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+      - PGADMIN_HOST=127.0.0.1
+    ports:
+      - "8081:80"
+    depends_on:
+      - postgres
+
+  mongo:
+    container_name: db-mongo
+    image: mongo:latest
+    restart: always
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+    volumes:
+      - ${DOCKER_VOLUME_DIRECTORY:-.}/volumes/mongo:/data/db
+    ports:
+      - '27017:27017'
+
+#  app:
+#    build: .
+#    environment:
+#      - RUST_LOG=info
+#      - CONFIG=./config/config.toml
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - postgres
+#      - mongo
+
+#networks:
+#  default:
+#    name: netnova

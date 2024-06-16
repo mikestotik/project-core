@@ -1,0 +1,39 @@
+[app]
+name = "Project Name"
+version = "0.1.0"
+
+[server]
+host = "127.0.0.1"
+port = 8080
+cors = "*"
+ssl = false
+
+[postgres]
+url = "postgres://user:password@localhost:5432/myapp"
+
+[mongo]
+url = "mongodb://localhost:27017"
+database = "myapp"
+
+[logs]
+level = "info"
+
+[mail]
+smtp_server = "smtp.example.com"
+smtp_user = "user@example.com"
+smtp_password = "password"
+
+[auth]
+jwt_secret = "your_jwt_secret"
+
+[crypto]
+hash_secret = "your_hash_secret"
+salt = "your_salt"
+
+[google]
+client_id = "your_google_client_id"
+client_secret = "your_google_client_secret"
+
+[twitter]
+api_key = "your_twitter_api_key"
+api_secret_key = "your_twitter_api_secret_key"
