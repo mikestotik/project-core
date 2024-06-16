@@ -1,2 +1,2 @@
-mod routes;
-mod controllers;
+pub mod routes;
+pub mod controllers;

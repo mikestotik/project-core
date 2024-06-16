@@ -1,10 +1,32 @@
+#![allow(dead_code)]
+#![allow(unused_variables)]
+
+
+use actix_web::{App, HttpServer};
+
+use crate::config::database;
+use crate::config::settings::Config;
+
+
 mod config;
 mod domain;
-mod application;
 mod infrastructure;
 mod presentation;
+mod application;
 
 
-fn main() {
-    println!("Hello, world!");
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    let config = Config::from_env().expect("Failed to load configuration");
+    let db_pool = database::connect_to_db(&config).await;
+
+    // println!("{:?}", db_pool);
+
+    HttpServer::new(move || {
+        App::new()
+            .configure(presentation::routes::init)
+    })
+        .bind((config.server.host.as_str(), config.server.port))?
+        .run()
+        .await
 }
