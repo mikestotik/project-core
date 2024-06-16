@@ -10,6 +10,21 @@ impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager.create_table(
             Table::create()
+                .table(Role::Table)
+                .if_not_exists()
+                .col(
+                    ColumnDef::new(Role::Id)
+                        .integer()
+                        .not_null()
+                        .auto_increment()
+                        .primary_key(),
+                )
+                .col(ColumnDef::new(Role::Name).string().not_null().unique_key())
+                .to_owned(),
+        ).await?;
+
+        manager.create_table(
+            Table::create()
                 .table(User::Table)
                 .if_not_exists()
                 .col(ColumnDef::new(User::Id).integer().not_null().auto_increment().primary_key())
@@ -18,64 +33,36 @@ impl MigrationTrait for Migration {
                 .col(ColumnDef::new(User::Password).string().not_null())
                 .col(ColumnDef::new(User::Logo).string())
                 .col(ColumnDef::new(User::Lang).string())
+                .col(ColumnDef::new(User::RoleId).integer().not_null())
                 .col(ColumnDef::new(User::Created).timestamp().not_null().default(Expr::current_timestamp()))
                 .col(ColumnDef::new(User::Updated).timestamp().not_null().default(Expr::current_timestamp()))
+                .foreign_key(
+                    ForeignKey::create()
+                        .name("fk_user_role")
+                        .from(User::Table, User::RoleId)
+                        .to(Role::Table, Role::Id),
+                )
                 .to_owned(),
-        )
-            .await?;
-
-        manager
-            .create_table(
-                Table::create()
-                    .table(Role::Table)
-                    .if_not_exists()
-                    .col(
-                        ColumnDef::new(Role::Id)
-                            .integer()
-                            .not_null()
-                            .auto_increment()
-                            .primary_key(),
-                    )
-                    .col(ColumnDef::new(Role::Name).string().not_null().unique_key())
-                    .to_owned(),
-            )
-            .await?;
-
-        // manager.exec_stmt(
-        //     Statement::from_string(
-        //         DatabaseBackend::Postgres,
-        //         "INSERT INTO roles (name) VALUES ('Superadmin'), ('Admin'), ('User');",
-        //     )
-        // ).await?;
-        //
-        // manager.exec_stmt(
-        //     Statement::from_string(
-        //         DatabaseBackend::Postgres,
-        //         "INSERT INTO users (username, email, password, created, updated) VALUES ('superadmin', 'superadmin@example.com', 'hashed_password', now(), now());".to_owned(),
-        //     )
-        // ).await?;
-        //
-        // manager.exec_stmt(
-        //     Statement::from_string(
-        //         DatabaseBackend::Postgres,
-        //         "INSERT INTO user_roles (user_id, role_id) VALUES ((SELECT id FROM users WHERE username = 'superadmin'), (SELECT id FROM roles WHERE name = 'Superadmin'));".to_owned(),
-        //     )
-        // ).await?;
+        ).await?;
 
         Ok(())
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
-        manager
-            .drop_table(Table::drop().table(User::Table).to_owned())
-            .await?;
-
-        manager
-            .drop_table(Table::drop().table(Role::Table).to_owned())
-            .await?;
+        manager.drop_table(Table::drop().table(User::Table).to_owned()).await?;
+        manager.drop_table(Table::drop().table(Role::Table).to_owned()).await?;
 
         Ok(())
     }
+}
+
+
+#[derive(DeriveIden)]
+enum Role {
+    #[sea_orm(iden = "roles")]
+    Table,
+    Id,
+    Name,
 }
 
 
@@ -89,15 +76,7 @@ enum User {
     Password,
     Logo,
     Lang,
+    RoleId,
     Created,
     Updated,
-}
-
-
-#[derive(DeriveIden)]
-enum Role {
-    #[sea_orm(iden = "roles")]
-    Table,
-    Id,
-    Name,
 }
