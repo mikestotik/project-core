@@ -14,6 +14,14 @@ pub struct CreateUserRequest {
 }
 
 
+pub async fn get_all_users(service: web::Data<UserService>, user_data: web::Json<CreateUserRequest>) -> impl Responder {
+    match service.find_all().await {
+        Ok(users) => HttpResponse::Ok().json(users),
+        Err(_) => HttpResponse::InternalServerError().finish(),
+    }
+}
+
+
 pub async fn create_user(service: web::Data<UserService>, user_data: web::Json<CreateUserRequest>) -> impl Responder {
     let user = UserActiveModel {
         id: Set(1),

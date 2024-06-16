@@ -15,6 +15,10 @@ impl UserService {
         Self { repo }
     }
 
+    pub async fn find_all(&self) -> Result<Vec<UserModel>, DbErr> {
+        self.repo.find_all().await
+    }
+
     pub async fn create_user(&self, user: UserActiveModel) -> Result<UserModel, DbErr> {
         self.repo.create(user).await
     }
