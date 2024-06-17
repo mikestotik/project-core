@@ -1,7 +1,7 @@
 use sea_orm::{DbErr, DeleteResult};
 
 use crate::domain::entities::user::Model as UserModel;
-use crate::enums::user_enum::UserRoleEnum;
+use crate::enums::user_role_enum::UserRoleEnum;
 use crate::infrastructure::repositories::user_repository::UserRepository;
 use crate::presentation::dto::user_dto::{CreateUserDTO, UpdateUserDTO};
 

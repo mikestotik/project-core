@@ -4,7 +4,7 @@ use sea_orm::ColumnTrait;
 use sea_orm::QueryFilter;
 
 use crate::domain::entities::user;
-use crate::enums::user_enum::UserRoleEnum;
+use crate::enums::user_role_enum::UserRoleEnum;
 use crate::presentation::dto::user_dto::{CreateUserDTO, UpdateUserDTO};
 
 
