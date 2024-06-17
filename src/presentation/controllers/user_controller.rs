@@ -1,40 +1,38 @@
 use actix_web::{HttpResponse, Responder, web};
-use sea_orm::ActiveValue::Set;
-use serde::{Deserialize, Serialize};
+use actix_web::web::{Json, Path};
 
-use crate::domain::entities::user::ActiveModel as UserActiveModel;
 use crate::domain::services::user_service::UserService;
-use crate::enums::user_enum::UserRoleEnum;
+
+use super::super::dto::user_dto::{CreateUserDTO, UpdateUserDTO};
 
 
-#[derive(Deserialize, Serialize)]
-pub struct CreateUserRequest {
-    pub username: String,
-    pub email: String,
-    pub password: String,
-}
-
-
-pub async fn get_all_users(service: web::Data<UserService>, user_data: web::Json<CreateUserRequest>) -> impl Responder {
+pub async fn get_all(service: web::Data<UserService>) -> impl Responder {
     match service.find_all().await {
-        Ok(users) => HttpResponse::Ok().json(users),
+        Ok(res) => HttpResponse::Ok().json(res),
         Err(_) => HttpResponse::InternalServerError().finish(),
     }
 }
 
 
-pub async fn create_user(service: web::Data<UserService>, user_data: web::Json<CreateUserRequest>) -> impl Responder {
-    let default_role = UserRoleEnum::USER;
-    let user = UserActiveModel {
-        username: Set(user_data.username.clone()),
-        email: Set(user_data.email.clone()),
-        password: Set(user_data.password.clone()),  // Hash the password before saving in a real application
-        role_id: Set(default_role.value()),
-        ..Default::default()
-    };
+pub async fn get_one(service: web::Data<UserService>, id: Path<i32>) -> impl Responder {
+    match service.find_one(id.into_inner()).await {
+        Ok(res) => HttpResponse::Ok().json(res),
+        Err(_) => HttpResponse::InternalServerError().finish(),
+    }
+}
 
-    match service.create_user(user).await {
-        Ok(user) => HttpResponse::Ok().json(user),
+
+pub async fn create(service: web::Data<UserService>, data: Json<CreateUserDTO>) -> impl Responder {
+    match service.create(data.into_inner()).await {
+        Ok(res) => HttpResponse::Ok().json(res),
+        Err(err) => HttpResponse::InternalServerError().finish(),
+    }
+}
+
+
+pub async fn update(service: web::Data<UserService>, id: Path<i32>, data: Json<UpdateUserDTO>) -> impl Responder {
+    match service.update(id.into_inner(), data.into_inner()).await {
+        Ok(res) => HttpResponse::Ok().json(res),
         Err(_) => HttpResponse::InternalServerError().finish(),
     }
 }

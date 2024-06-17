@@ -7,18 +7,17 @@ use serde::{Deserialize, Serialize};
 pub struct Model {
     #[sea_orm(primary_key)]
     pub id: i32,
+    #[sea_orm(unique)]
     pub username: String,
+    #[sea_orm(unique)]
     pub email: String,
     pub password: String,
     pub logo: Option<String>,
     pub lang: Option<String>,
     pub role_id: i32,
-    // #[sea_orm(on_insert = "current_timestamp")]
-    // #[sea_orm(column_type = "TimestampWithTimeZone", default_value = "CURRENT_TIMESTAMP")]
-    pub created: DateTimeWithTimeZone,
-    // #[sea_orm(on_update = "current_timestamp")]
-    // #[sea_orm(column_type = "TimestampWithTimeZone", default_value = "CURRENT_TIMESTAMP")]
-    pub updated: DateTimeWithTimeZone,
+    pub created: DateTime,
+    #[sea_orm(auto_update_time)]
+    pub updated: DateTime,
 }
 
 
