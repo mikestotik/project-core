@@ -11,7 +11,7 @@ use super::super::dto::user_dto::{CreateUserDTO, UpdateUserDTO};
 pub async fn get_all(service: web::Data<UserService>) -> impl Responder {
     match service.find_all().await {
         Ok(res) => HttpResponse::Ok().json(res),
-        Err(_) => HttpResponse::InternalServerError().finish(),
+        Err(err) => HttpResponse::InternalServerError().finish(),
     }
 }
 
