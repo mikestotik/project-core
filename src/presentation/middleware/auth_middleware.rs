@@ -1,15 +1,18 @@
+use std::pin::Pin;
+use std::rc::Rc;
+
 use actix_service::{Service, Transform};
 use actix_web::dev::{ServiceRequest, ServiceResponse};
 use actix_web::Error;
-use futures::future::{ok, Ready};
-use futures::task::{Context, Poll};
-use futures::Future;
-use std::pin::Pin;
-use std::rc::Rc;
-use crate::config::auth::decode_jwt;
-use actix_web::web::Data;
 use actix_web::error::ErrorUnauthorized;
 use actix_web::HttpMessage;
+use actix_web::web::Data;
+use futures::future::{ok, Ready};
+use futures::Future;
+use futures::task::{Context, Poll};
+
+use crate::config::auth::decode_jwt;
+
 
 pub struct AuthMiddleware;
 
@@ -50,7 +53,9 @@ where
 
     fn call(&self, req: ServiceRequest) -> Self::Future {
         let auth_header = req.headers().get("Authorization");
-        let config = req.app_data::<Data<crate::config::settings::Config>>().cloned();
+        let config = req
+            .app_data::<Data<crate::config::settings::Config>>()
+            .cloned();
 
         if let (Some(auth_header), Some(config)) = (auth_header, config) {
             if let Ok(auth_header) = auth_header.to_str() {
