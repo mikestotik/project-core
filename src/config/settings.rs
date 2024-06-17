@@ -3,7 +3,7 @@ use config::ConfigError;
 use serde::Deserialize;
 
 
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct Config {
     pub app: AppConfig,
     pub server: ServerConfig,
@@ -15,15 +15,13 @@ pub struct Config {
     pub crypto: CryptoConfig,
 }
 
-
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct AppConfig {
     pub name: String,
     pub version: String,
 }
 
-
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct ServerConfig {
     pub host: String,
     pub port: u16,
@@ -31,22 +29,19 @@ pub struct ServerConfig {
     pub ssl: SslConfig,
 }
 
-
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct CorsConfig {
     pub allowed_origins: Vec<String>,
 }
 
-
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct SslConfig {
     pub enabled: bool,
     pub cert_path: String,
     pub key_path: String,
 }
 
-
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct PostgresConfig {
     pub host: String,
     pub port: u16,
@@ -55,22 +50,19 @@ pub struct PostgresConfig {
     pub database: String,
 }
 
-
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct MongoConfig {
     pub url: String,
     pub database: String,
 }
 
-
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct LogsConfig {
     pub level: String,
     pub output: String,
 }
 
-
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct MailConfig {
     pub smtp_server: String,
     pub smtp_port: u16,
@@ -78,19 +70,16 @@ pub struct MailConfig {
     pub smtp_password: String,
 }
 
-
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct AuthConfig {
     pub jwt_secret: String,
 }
 
-
-#[derive(Deserialize, Debug)]
+#[derive(Deserialize, Debug, Clone)]
 pub struct CryptoConfig {
     pub hash_secret: String,
     pub salt: String,
 }
-
 
 impl Config {
     pub fn from_env() -> Result<Self, ConfigError> {

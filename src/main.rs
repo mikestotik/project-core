@@ -27,6 +27,10 @@ mod macros;
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let config = Config::from_env().expect("Failed to load configuration");
+
+    let host = config.server.host.as_str();
+    let port = config.server.port;
+
     let db = database::connect_to_db(&config).await;
 
     let role_repo = RoleRepository::new(db.clone());
@@ -35,8 +39,11 @@ async fn main() -> std::io::Result<()> {
     let role_service = RoleService::new(role_repo.clone());
     let user_service = UserService::new(user_repo.clone());
 
+    let cloned_config = config.clone();
+
     HttpServer::new(move || {
         App::new()
+            .app_data(Data::new(cloned_config.clone()))
             .app_data(Data::new(db.clone()))
             .app_data(Data::new(role_repo.clone()))
             .app_data(Data::new(user_repo.clone()))
@@ -44,7 +51,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(Data::new(user_service.clone()))
             .configure(presentation::routes::init)
     })
-    .bind((config.server.host.as_str(), config.server.port))?
+    .bind((host, port))?
     .run()
     .await
 }

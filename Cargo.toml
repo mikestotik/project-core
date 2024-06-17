@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 actix-web = "4.7.0"
+actix-service = "2"
 sea-orm = { version = "0.12", features = ["runtime-actix", "macros", "sqlx-postgres"] }
 sea-orm-cli = "0.12"
 dotenv = "0.15"
@@ -23,6 +24,7 @@ validator = { version = "0.18", features = ["derive"] }
 
 #entities = { path = "entities" }
 migration = { path = "migration" }
+futures = "0.3"
 
 [dev-dependencies]
 actix-rt = "2.10"
