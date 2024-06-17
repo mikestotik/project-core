@@ -3,7 +3,8 @@ use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
-use crate::presentation::dto::user_dto::UpdateUserDTO;
+use crate::domain::services::user_service::UserService;
+use crate::presentation::dto::user_dto::{CreateUserDTO, UpdateUserDTO};
 
 
 #[derive(Default, Clone, Debug, PartialEq, DeriveEntityModel, Serialize, Deserialize)]
@@ -69,3 +70,18 @@ impl RelationTrait for Relation {
 }
 
 impl ActiveModelBehavior for ActiveModel {}
+
+async fn create_default_users(user_service: &UserService) {
+    match user_service.find_by_username("superadmin").await {
+        Ok(None) => {
+            let _ = user_service
+                .create(CreateUserDTO {
+                    email: "superadmin@domain.com".to_string(),
+                    password: "superadmin_password_hash".to_string(),
+                    username: "superadmin".to_string(),
+                })
+                .await;
+        }
+        _ => {}
+    }
+}

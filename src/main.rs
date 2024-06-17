@@ -45,8 +45,6 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .app_data(Data::new(cloned_config.clone()))
             .app_data(Data::new(db.clone()))
-            .app_data(Data::new(role_repo.clone()))
-            .app_data(Data::new(user_repo.clone()))
             .app_data(Data::new(role_service.clone()))
             .app_data(Data::new(user_service.clone()))
             .configure(presentation::routes::init)
