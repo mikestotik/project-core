@@ -1,4 +1,4 @@
-use sea_orm::DbErr;
+use sea_orm::{DbErr, DeleteResult};
 
 use crate::domain::entities::user::Model as UserModel;
 use crate::enums::user_enum::UserRoleEnum;
@@ -45,5 +45,10 @@ impl UserService {
 
     pub async fn find_by_email(&self, email: &str) -> Result<Option<UserModel>, DbErr> {
         self.repo.find_by_email(email).await
+    }
+
+
+    pub async fn delete(&self, id: i32) -> Result<DeleteResult, DbErr> {
+        self.repo.delete(id).await
     }
 }

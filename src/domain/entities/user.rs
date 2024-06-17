@@ -1,5 +1,6 @@
 use chrono::Utc;
 use sea_orm::ActiveValue::Set;
+use sea_orm::DeleteResult;
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -25,8 +26,8 @@ pub struct Model {
 
 
 impl Model {
-    pub async fn update_user(db: &DatabaseConnection, id: i32, dto: UpdateUserDTO) -> Result<Model, DbErr> {
-        let user: ActiveModel = Self::find_user_by_id(db, id).await?.into();
+    pub async fn update_entity(db: &DatabaseConnection, id: i32, dto: UpdateUserDTO) -> Result<Model, DbErr> {
+        let user: ActiveModel = Self::find_entity_by_id(db, id).await?.into();
 
         let mut updated_user = user;
 
@@ -42,7 +43,14 @@ impl Model {
         updated_user.update(db).await
     }
 
-    async fn find_user_by_id(db: &DatabaseConnection, id: i32) -> Result<Model, DbErr> {
+
+    pub async fn delete_entity(db: &DatabaseConnection, id: i32) -> Result<DeleteResult, DbErr> {
+        let user: ActiveModel = Self::find_entity_by_id(db, id).await?.into();
+        user.delete(db).await
+    }
+
+
+    async fn find_entity_by_id(db: &DatabaseConnection, id: i32) -> Result<Model, DbErr> {
         Entity::find_by_id(id)
             .one(db)
             .await?

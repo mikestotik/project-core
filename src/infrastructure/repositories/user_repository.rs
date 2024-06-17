@@ -1,4 +1,4 @@
-use sea_orm::{ActiveModelTrait, DatabaseConnection, DbErr, EntityTrait};
+use sea_orm::{ActiveModelTrait, DatabaseConnection, DbErr, DeleteResult, EntityTrait};
 use sea_orm::ActiveValue::Set;
 use sea_orm::ColumnTrait;
 use sea_orm::QueryFilter;
@@ -32,7 +32,7 @@ impl UserRepository {
     }
 
     pub async fn update(&self, id: i32, dto: UpdateUserDTO) -> Result<user::Model, DbErr> {
-        user::Model::update_user(&self.db, id, dto).await
+        user::Model::update_entity(&self.db, id, dto).await
     }
 
 
@@ -53,5 +53,10 @@ impl UserRepository {
 
     pub async fn find_by_email(&self, email: &str) -> Result<Option<user::Model>, DbErr> {
         user::Entity::find().filter(user::Column::Email.eq(email)).one(&self.db).await
+    }
+
+
+    pub async fn delete(&self, id: i32) -> Result<DeleteResult, DbErr> {
+        user::Model::delete_entity(&self.db, id).await
     }
 }

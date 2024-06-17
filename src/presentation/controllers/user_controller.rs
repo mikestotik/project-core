@@ -1,27 +1,11 @@
 use actix_web::{HttpResponse, Responder, web};
 use actix_web::web::{Json, Path};
-use sea_orm::DbErr;
-use serde::Serialize;
 use validator::Validate;
 
 use crate::domain::services::user_service::UserService;
+use crate::presentation::dto::response_dto::ResultResponse;
 
 use super::super::dto::user_dto::{CreateUserDTO, UpdateUserDTO};
-
-
-#[derive(Serialize)]
-struct ErrorResponse {
-    error: String,
-}
-
-
-impl From<DbErr> for ErrorResponse {
-    fn from(err: DbErr) -> Self {
-        ErrorResponse {
-            error: err.to_string(),
-        }
-    }
-}
 
 
 pub async fn get_all(service: web::Data<UserService>) -> impl Responder {
@@ -60,5 +44,13 @@ pub async fn update(service: web::Data<UserService>, id: Path<i32>, data: Json<U
     match service.update(id.into_inner(), data.into_inner()).await {
         Ok(res) => HttpResponse::Ok().json(res),
         Err(err) => HttpResponse::BadRequest().into(),
+    }
+}
+
+
+pub async fn delete(service: web::Data<UserService>, id: Path<i32>) -> impl Responder {
+    match service.delete(id.into_inner()).await {
+        Ok(res) => HttpResponse::Ok().json(ResultResponse::new("Success")),
+        Err(err) => HttpResponse::BadRequest().json(ResultResponse::new("Error")),
     }
 }
