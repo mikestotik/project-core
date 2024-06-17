@@ -10,18 +10,19 @@ use crate::config::settings::Config;
 use crate::domain::services::role_service::RoleService;
 use crate::domain::services::user_service::UserService;
 use crate::infrastructure::repositories::{
-    role_repository::RoleRepository,
-    user_repository::UserRepository,
+    role_repository::RoleRepository, user_repository::UserRepository,
 };
 
 
+mod application;
 mod config;
 mod domain;
+mod enums;
 mod infrastructure;
 mod presentation;
-mod application;
-mod enums;
 
+#[macro_use]
+mod macros;
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -43,7 +44,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(Data::new(user_service.clone()))
             .configure(presentation::routes::init)
     })
-        .bind((config.server.host.as_str(), config.server.port))?
-        .run()
-        .await
+    .bind((config.server.host.as_str(), config.server.port))?
+    .run()
+    .await
 }

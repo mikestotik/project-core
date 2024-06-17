@@ -15,14 +15,12 @@ pub async fn get_all(service: web::Data<UserService>) -> impl Responder {
     }
 }
 
-
 pub async fn get_one(service: web::Data<UserService>, id: Path<i32>) -> impl Responder {
     match service.find_one(id.into_inner()).await {
         Ok(res) => HttpResponse::Ok().json(res),
         Err(_) => HttpResponse::InternalServerError().finish(),
     }
 }
-
 
 pub async fn create(service: web::Data<UserService>, data: Json<CreateUserDTO>) -> impl Responder {
     match &data.validate() {
@@ -35,8 +33,11 @@ pub async fn create(service: web::Data<UserService>, data: Json<CreateUserDTO>) 
     }
 }
 
-
-pub async fn update(service: web::Data<UserService>, id: Path<i32>, data: Json<UpdateUserDTO>) -> impl Responder {
+pub async fn update(
+    service: web::Data<UserService>,
+    id: Path<i32>,
+    data: Json<UpdateUserDTO>,
+) -> impl Responder {
     match &data.validate() {
         Ok(_) => (),
         Err(e) => return HttpResponse::BadRequest().json(e),
@@ -46,7 +47,6 @@ pub async fn update(service: web::Data<UserService>, id: Path<i32>, data: Json<U
         Err(err) => HttpResponse::BadRequest().into(),
     }
 }
-
 
 pub async fn delete(service: web::Data<UserService>, id: Path<i32>) -> impl Responder {
     match service.delete(id.into_inner()).await {

@@ -1,8 +1,7 @@
-use chrono::Utc;
-use sea_orm::ActiveValue::Set;
 use sea_orm::DeleteResult;
 use sea_orm::entity::prelude::*;
 use serde::{Deserialize, Serialize};
+use validator::Validate;
 
 use crate::presentation::dto::user_dto::UpdateUserDTO;
 
@@ -24,31 +23,26 @@ pub struct Model {
     pub updated: DateTime,
 }
 
-
 impl Model {
-    pub async fn update_entity(db: &DatabaseConnection, id: i32, dto: UpdateUserDTO) -> Result<Model, DbErr> {
+    pub async fn update_entity(
+        db: &DatabaseConnection,
+        id: i32,
+        dto: UpdateUserDTO,
+    ) -> Result<Model, DbErr> {
+        if let Err(e) = dto.validate() {
+            return Err(DbErr::Custom(e.to_string()));
+        }
+
         let user: ActiveModel = Self::find_entity_by_id(db, id).await?.into();
-
-        let mut updated_user = user;
-
-        dto.username.map(|username| updated_user.username = Set(username));
-        dto.email.map(|email| updated_user.email = Set(email));
-        dto.password.map(|password| updated_user.password = Set(password));
-        dto.logo.map(|logo| updated_user.logo = Set(Some(logo)));
-        dto.lang.map(|lang| updated_user.lang = Set(Some(lang)));
-        dto.role_id.map(|role_id| updated_user.role_id = Set(role_id));
-
-        updated_user.updated = Set(Utc::now().naive_utc());
+        let updated_user = dto.to_active_model(user);
 
         updated_user.update(db).await
     }
-
 
     pub async fn delete_entity(db: &DatabaseConnection, id: i32) -> Result<DeleteResult, DbErr> {
         let user: ActiveModel = Self::find_entity_by_id(db, id).await?.into();
         user.delete(db).await
     }
-
 
     async fn find_entity_by_id(db: &DatabaseConnection, id: i32) -> Result<Model, DbErr> {
         Entity::find_by_id(id)
@@ -58,12 +52,10 @@ impl Model {
     }
 }
 
-
 #[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
     Role,
 }
-
 
 impl RelationTrait for Relation {
     fn def(&self) -> RelationDef {
@@ -75,6 +67,5 @@ impl RelationTrait for Relation {
         }
     }
 }
-
 
 impl ActiveModelBehavior for ActiveModel {}
