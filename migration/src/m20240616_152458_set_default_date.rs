@@ -12,7 +12,7 @@ impl MigrationTrait for Migration {
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager.get_connection().execute(Statement::from_string(
             manager.get_database_backend(),
-            "INSERT INTO roles (name) VALUES ('SUPERADMIN'), ('ADMIN'), ('USER');".to_owned(),
+            "INSERT INTO roles (name) VALUES ('SuperAdmin'), ('Admin'), ('User');".to_owned(),
         )).await?;
 
         Ok(())
@@ -21,7 +21,7 @@ impl MigrationTrait for Migration {
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager.get_connection().execute(Statement::from_string(
             manager.get_database_backend(),
-            "DELETE FROM roles WHERE name IN ('SUPERADMIN', 'ADMIN', 'USER');".to_owned(),
+            "DELETE FROM roles WHERE name IN ('SuperAdmin', 'Admin', 'User');".to_owned(),
         )).await?;
 
         Ok(())

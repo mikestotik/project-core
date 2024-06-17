@@ -72,16 +72,13 @@ impl RelationTrait for Relation {
 impl ActiveModelBehavior for ActiveModel {}
 
 async fn create_default_users(user_service: &UserService) {
-    match user_service.find_by_username("superadmin").await {
-        Ok(None) => {
-            let _ = user_service
-                .create(CreateUserDTO {
-                    email: "superadmin@domain.com".to_string(),
-                    password: "superadmin_password_hash".to_string(),
-                    username: "superadmin".to_string(),
-                })
-                .await;
-        }
-        _ => {}
+    if let Ok(None) = user_service.find_by_username("superadmin").await {
+        let _ = user_service
+            .create(CreateUserDTO {
+                email: "superadmin@domain.com".to_string(),
+                password: "superadmin_password_hash".to_string(),
+                username: "superadmin".to_string(),
+            })
+            .await;
     }
 }

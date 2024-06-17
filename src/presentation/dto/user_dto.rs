@@ -27,7 +27,7 @@ pub struct UpdateUserDTO {
 }
 
 impl UpdateUserDTO {
-    pub fn to_active_model(self, mut existing_user: user::ActiveModel) -> user::ActiveModel {
+    pub fn to_active_model(&self, mut existing_user: user::ActiveModel) -> user::ActiveModel {
         update_fields!(self, existing_user, {
             username,
             email,

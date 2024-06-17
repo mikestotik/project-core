@@ -52,27 +52,39 @@ where
     }
 
     fn call(&self, req: ServiceRequest) -> Self::Future {
-        let auth_header = req.headers().get("Authorization");
-        let config = req
+        // Extract the Authorization header and configuration
+        let auth_header = match req.headers().get("Authorization") {
+            Some(header) => header,
+            None => return Box::pin(async { Err(ErrorUnauthorized("Unauthorized")) }),
+        };
+
+        let config = match req
             .app_data::<Data<crate::config::settings::Config>>()
-            .cloned();
+            .cloned()
+        {
+            Some(cfg) => cfg,
+            None => return Box::pin(async { Err(ErrorUnauthorized("Unauthorized")) }),
+        };
 
-        if let (Some(auth_header), Some(config)) = (auth_header, config) {
-            if let Ok(auth_header) = auth_header.to_str() {
-                if auth_header.starts_with("Bearer ") {
-                    let token = &auth_header[7..];
-                    if let Ok(claims) = decode_jwt(token, &config.auth.jwt_secret) {
-                        req.extensions_mut().insert(claims);
-                        let fut = self.service.call(req);
-                        return Box::pin(async move {
-                            let res = fut.await?;
-                            Ok(res)
-                        });
-                    }
-                }
-            }
-        }
+        // Convert Authorization header to str and check if it starts with "Bearer "
+        let auth_header = match auth_header.to_str() {
+            Ok(header) if header.starts_with("Bearer ") => &header[7..],
+            _ => return Box::pin(async { Err(ErrorUnauthorized("Unauthorized")) }),
+        };
 
-        Box::pin(async { Err(ErrorUnauthorized("Unauthorized")) })
+        // Decode the JWT token
+        let claims = match decode_jwt(auth_header, &config.auth.jwt_secret) {
+            Ok(claims) => claims,
+            Err(_) => return Box::pin(async { Err(ErrorUnauthorized("Unauthorized")) }),
+        };
+
+        // Insert claims into request extensions and call the service
+        req.extensions_mut().insert(claims);
+        let fut = self.service.call(req);
+
+        Box::pin(async move {
+            let res = fut.await?;
+            Ok(res)
+        })
     }
 }

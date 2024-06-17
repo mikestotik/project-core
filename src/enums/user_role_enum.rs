@@ -1,17 +1,17 @@
 #[derive(Debug)]
 pub enum UserRoleEnum {
-    SUPERADMIN,
-    ADMIN,
-    USER,
+    SuperAdmin,
+    Admin,
+    User,
 }
 
 
 impl UserRoleEnum {
     pub fn value(&self) -> i32 {
         match self {
-            UserRoleEnum::SUPERADMIN => 1,
-            UserRoleEnum::ADMIN => 2,
-            UserRoleEnum::USER => 3,
+            UserRoleEnum::SuperAdmin => 1,
+            UserRoleEnum::Admin => 2,
+            UserRoleEnum::User => 3,
         }
     }
 }

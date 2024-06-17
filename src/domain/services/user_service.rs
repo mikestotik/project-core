@@ -29,7 +29,7 @@ impl UserService {
 
 
     pub async fn create(&self, dto: CreateUserDTO) -> Result<UserModel, DbErr> {
-        self.repo.create(dto, UserRoleEnum::USER).await
+        self.repo.create(dto, UserRoleEnum::User).await
     }
 
 
