@@ -73,6 +73,8 @@ pub struct MailConfig {
 #[derive(Deserialize, Debug, Clone)]
 pub struct AuthConfig {
     pub jwt_secret: String,
+    pub jwt_access_ttl: usize,
+    pub jwt_refresh_ttl: usize,
 }
 
 #[derive(Deserialize, Debug, Clone)]

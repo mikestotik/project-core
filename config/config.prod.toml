@@ -5,26 +5,40 @@ version = "0.1.0"
 [server]
 host = "127.0.0.1"
 port = 8080
-cors = "*"
-ssl = false
+
+[server.cors]
+allowed_origins = ["*"]
+
+[server.ssl]
+enabled = false
+cert_path = "path/to/cert.pem"
+key_path = "path/to/key.pem"
 
 [postgres]
-url = "postgres://user:password@localhost:5432/myapp"
+host = "localhost"
+port = 5432
+user = "user"
+password = "password"
+database = "myapp"
 
 [mongo]
 url = "mongodb://localhost:27017"
 database = "myapp"
 
 [logs]
-level = "info"
+level = "debug"
+output = "file"
 
 [mail]
 smtp_server = "smtp.example.com"
+smtp_port = 587
 smtp_user = "user@example.com"
 smtp_password = "password"
 
 [auth]
 jwt_secret = "your_jwt_secret"
+jwt_access_ttl = 600
+jwt_refresh_ttl = 3600
 
 [crypto]
 hash_secret = "your_hash_secret"

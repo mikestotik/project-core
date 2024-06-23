@@ -17,12 +17,12 @@ impl Claims {
     }
 }
 
-pub fn create_jwt(user_id: &str, role: &str, secret: &str) -> String {
+pub fn create_jwt(user_id: &str, role: &str, secret: &str, ttl: &usize) -> String {
     let expiration = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .expect("Time went backwards")
         .as_secs() as usize
-        + 3600; // 1 hour expiration
+        + ttl;
     let claims = Claims::new(user_id.to_string(), role.to_string(), expiration);
     encode(
         &Header::default(),

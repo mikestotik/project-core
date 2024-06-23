@@ -37,6 +37,8 @@ smtp_password = "password"
 
 [auth]
 jwt_secret = "your_jwt_secret"
+jwt_access_ttl = 3600
+jwt_refresh_ttl = 3600
 
 [crypto]
 hash_secret = "your_hash_secret"

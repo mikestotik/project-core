@@ -30,10 +30,17 @@ pub async fn login(
                     &user.id.to_string(),
                     &user.role_id.to_string(),
                     &config.auth.jwt_secret,
+                    &config.auth.jwt_access_ttl,
+                );
+                let refresh_token = create_jwt(
+                    &user.id.to_string(),
+                    &user.role_id.to_string(),
+                    &config.auth.jwt_secret,
+                    &config.auth.jwt_refresh_ttl,
                 );
                 HttpResponse::Ok().json(LoginResponse {
                     access_token, 
-                    refresh_token: "".to_string()
+                    refresh_token
                 })
             } else {
                 HttpResponse::Unauthorized().finish()
